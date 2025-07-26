@@ -61,8 +61,36 @@ const EventForm = ({ eventForEdit, addOrEdit }) => {
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+
+    if (!selectedFile) return;
+
+    const validTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+    const maxSize = 5 * 1024 * 1024; 
+
+    // Type validation
+    if (!validTypes.includes(selectedFile.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        file: "Only PDF, JPEG, PNG, or WebP files are allowed.",
+      }));
+      setFile(null);
+      return;
+    }
+
+    if (selectedFile.size > maxSize) {
+      setErrors((prev) => ({
+        ...prev,
+        file: "File size must be less than 5MB.",
+      }));
+      setFile(null);
+      return;
+    }
+
+    setErrors((prev) => ({ ...prev, file: "" }));
+    setFile(selectedFile);
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("🟢 handleSubmit called");
@@ -249,15 +277,43 @@ const EventForm = ({ eventForEdit, addOrEdit }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" component="label" fullWidth>
-            <CloudUploadIcon sx={{ mr: 1 }} />
-            Upload Event Image
-            <input type="file" hidden onChange={handleFileChange} />
+          <Button
+            variant="contained"
+            component="label"
+            fullWidth
+            color={file ? "success" : "primary"}
+            startIcon={<CloudUploadIcon />}
+          >
+            {file ? "Change File" : "Upload Event File"}
+            <input
+              type="file"
+              hidden
+              onChange={handleFileChange}
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
+            />
           </Button>
+
+          {/* Show selected file with 'X' button */}
           {file && (
-            <Chip label={file.name} color="primary" sx={{ mt: 1 }} />
+            <Chip
+              label={file.name}
+              color="primary"
+              onDelete={() => {
+                setFile(null);
+                setErrors((prev) => ({ ...prev, file: "" }));
+              }}
+              sx={{ mt: 1 }}
+            />
+          )}
+
+          {/* Show error message below file input */}
+          {errors.file && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              {errors.file}
+            </Typography>
           )}
         </Grid>
+
         <Grid item xs={12}>
           <Button
             variant="contained"
