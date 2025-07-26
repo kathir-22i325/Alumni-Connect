@@ -64,6 +64,17 @@ const Navbar = () => {
               </Button>
             ))}
 
+              {role === "Admin" && (
+              <Button
+                color="inherit"
+                component={Link}
+                to="/admin-home"
+                sx={{ display: { xs: "none", md: "inline-flex" } }}
+              >
+                Dashboard
+              </Button>
+            )}
+
             {!token && <Button color="inherit" component={Link} to="/login">Login</Button>}
 
             {token && (
