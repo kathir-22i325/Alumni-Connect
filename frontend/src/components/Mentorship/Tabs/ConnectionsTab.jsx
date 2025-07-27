@@ -234,7 +234,6 @@ const handleRequest = async (connectionId, action) => {
                       variant="contained" 
                       color="error"
                       sx={{ textTransform: "none", flex: 1 }}  // Same width as Chat button
-                      onClick={() => handleOpenDialog(conn)}
                   > 
                       Close Connection
                   </Button>
